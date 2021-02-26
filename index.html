@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ERT Note Maker</title>
+        <script>const whTooltips = {colorLinks: true, iconizeLinks: true, renameLinks: true};</script>
+        <script src="https://wow.zamimg.com/widgets/power.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+        <link href="css/ertnm.css" rel="stylesheet" />
+        <meta charset="UTF-8">
+    </head>
+    <body class="d-flex flex-column h-100">
+        <header>
+        <!-- Fixed navbar -->
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">ERT Note Maker</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Share</a>
+                            </li>
+                        </ul>
+                        <form class="d-flex">
+                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-success" type="submit">Search</button>
+                        </form>
+                        <button class="btn btn-outline-primary ms-2" type="button">Login via Battle.net</button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Begin page content -->
+        <main>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <form class="form-inline">
+                            <h2>Encounter</h2>
+
+                            <input type="text" class="mb-2" name="boss" placeholder="Boss" />
+
+                            <table width="100%" id="cooldown-table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Ability</th>
+                                        <th>Cooldowns</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </form>
+
+                        <textarea id="ert_string" class="mt-2" style="width:100%; height: 350px;"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <h2>Abilities</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 class="raid">Raid</h3>
+                                <div class="raid-abilities"></div>
+                                <h3 class="death-knight">Death Knight</h3>
+                                <div class="death-knight-abilities"></div>
+                                <h3 class="demon-hunter">Demon Hunter</h3>
+                                <div class="demon-hunter-abilities"></div>
+                                <h3 class="druid">Druid</h3>
+                                <div class="druid-abilities"></div>
+                                <h3 class="hunter">Hunter</h3>
+                                <div class="hunter-abilities"></div>
+                                <h3 class="mage">Mage</h3>
+                                <div class="mage-abilities"></div>
+                                <h3 class="monk">Monk</h3>
+                                <div class="monk-abilities"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h3 class="paladin">Paladin</h3>
+                                <div class="paladin-abilities"></div>
+                                <h3 class="priest">Priest</h3>
+                                <div class="priest-abilities"></div>
+                                <h3 class="shaman">Shaman</h3>
+                                <div class="shaman-abilities"></div>
+                                <h3 class="warlock">Warlock</h3>
+                                <div class="warlock-abilities"></div>
+                                <h3 class="warrior">Warrior</h3>
+                                <div class="warrior-abilities"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <script src="js/mustache.js"></script>
+        <script src="js/abilities.js"></script>
+        <script src="js/ertnm.js"></script>
+    </body>
+</html>
