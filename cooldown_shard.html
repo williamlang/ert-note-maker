@@ -1,18 +1,18 @@
 <tr id="step-{{ id }}" data-step="{{ id }}">
-    <td><input type="text" class="form-control" name="{{ id }}_time" value="{{ cooldown.time }}" size="5" maxlength="5" /></td>
+    <td><input type="text" class="form-control" data-step="{{ id }}" id="{{ id }}_time" value="{{ cooldown.time }}" size="5" maxlength="5" /></td>
     <td>
-        <input type="text" class="form-control" name="{{ id }}_ability" value="" style="width:50%;display:inline;" />
-        <select class="form-select" style="width:40%;display:inline;">
-            <option value="#0000FF">Blue</option>
-            <option value="#FF0000">Red</option>
-            <option value="#00FF00">Green</option>
+        <input type="text" class="form-control" data-step="{{ id }}" id="{{ id }}_boss_ability" value="" style="width:50%;display:inline;" />
+        <select class="form-select" id="{{ id }}_color" data-step="{{ id }}" style="width:40%;display:inline;">
+            <option value="0000FF">Blue</option>
+            <option value="FF0000">Red</option>
+            <option value="00FF00">Green</option>
         </select>
     </td>
     <td>
         <div>
-            <input type="text" class="form-control" style="width:45%;display:inline;" name="{{ id }}_player" placeholder="Player" value="{{ cooldown.player }}" />
-            <input type="text" class="form-control" style="width:45%;display:inline;" name="spell" value="{{ cooldown.ability.name }}" />
-            <button class="btn btn-danger" id="step-remove-{{ id }}" data-step="{{ id }}" type="button">-</button>
+            <input type="text" class="form-control" style="width:45%;display:inline;" id="{{ id }}_player" data-step="{{ id }}" placeholder="Player" value="{{ cooldown.player }}" />
+            <a href="#" data-wowhead="spell={{ cooldown.ability.id }}">{{ cooldown.ability.name }}</a>
+            <button class="btn btn-danger" id="{{ id }}_remove" data-step="{{ id }}" type="button">-</button>
         </div>
     </td>
 </tr>

@@ -18,6 +18,10 @@ class Cooldown {
         return this.time;
     }
 
+    getBossAbility() {
+        return this.bossAbility;
+    }
+
     getAbility() {
         return this.ability;
     }
@@ -26,8 +30,20 @@ class Cooldown {
         return this.player;
     }
 
+    setTime(time) {
+        this.time = time;
+    }
+
+    setColor(color) {
+        this.color = color;
+    }
+
     setBossAbility(ability) {
         this.bossAbility = ability;
+    }
+
+    setPlayer(playerName) {
+        this.player = playerName;
     }
 
     toObj() {
@@ -77,7 +93,32 @@ $(document).ready(function() {
         updateErtNote();
 
         $('#cooldown-table > tbody').append(Mustache.render(cooldown_shard, { id: cooldowns.length, cooldown: cooldown.toObj() }));
-        $('#step-remove-' + steps.length).on('click', function() {
+
+        $('#' + cooldowns.length + '_time').on('keyup', function() {
+            var cooldownId = $(this).data('step') - 1;
+            cooldowns[cooldownId].setTime($(this).val());
+            updateErtNote();
+        });
+
+        $('#' + cooldowns.length + '_boss_ability').on('keyup', function() {
+            var cooldownId = $(this).data('step') - 1;
+            cooldowns[cooldownId].setBossAbility(new Ability(null, $(this).val()));
+            updateErtNote();
+        });
+
+        $('#' + cooldowns.length + '_player').on('keyup', function() {
+            var cooldownId = $(this).data('step') - 1;
+            cooldowns[cooldownId].setPlayer($(this).val());
+            updateErtNote();
+        });
+
+        $('#' + cooldowns.length + '_color').on('change', function() {
+            var cooldownId = $(this).data('step') - 1;
+            cooldowns[cooldownId].setColor($(this).val());
+            updateErtNote();
+        });
+
+        $('#' + cooldowns.length + '_remove').on('click', function() {
             updateErtNote();
         });
     });
@@ -115,8 +156,7 @@ function updateErtNote() {
 
     for (var cooldown in cooldowns) {
         var html = $('#ert_string').html();
-
-        $('#ert_string').html(html + "\n" + formatCooldown(cooldowns[cooldown]));
+        $('#ert_string').html(html + formatCooldown(cooldowns[cooldown]) + "\n");
     }
 }
 
