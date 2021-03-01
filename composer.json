@@ -1,0 +1,15 @@
+{
+    "name": "lang/ert-note-maker",
+    "description": "App to create ERT notes",
+    "type": "project",
+    "authors": [
+        {
+            "name": "William",
+            "email": "lang14@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "twig/twig": "^3.3"
+    }
+}
