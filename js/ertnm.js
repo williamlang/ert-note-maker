@@ -1,133 +1,116 @@
 var ABILITY_SHARD = "ability_shard";
 var COOLDOWN_SHARD = "cooldown_shard";
+var PHASE_SHARD = "phase_shard";
 var ERT_COOLDOWN_SHARD = "ert_cooldown_shard";
-var steps = [];
+var ABILITY_COOLDOWN_SHARD = "ability_cooldown_shard"
+var TYPE_COOLDOWN = 'cooldown';
+var TYPE_PHASE = 'phase';
 var shards = {};
 var cooldowns = [];
 
-class Cooldown {
-    constructor(time, ability, player) {
-        this.bossAbility = null;
-        this.color = '0000FF';
-        this.time = time;
-        this.ability = ability;
-        this.player = player;
-    }
+var Step = Backbone.Model.extend({});
+var StepCollection = Backbone.Collection.extend({
+    model: Step
+});
 
-    getTime() {
-        return this.time;
-    }
+var Cooldown = Backbone.Model.extend({});
+var CooldownCollection = Backbone.Collection.extend({
+    model: Cooldown
+});
 
-    getBossAbility() {
-        return this.bossAbility;
-    }
-
-    getAbility() {
-        return this.ability;
-    }
-
-    getPlayer() {
-        return this.player;
-    }
-
-    setTime(time) {
-        this.time = time;
-    }
-
-    setColor(color) {
-        this.color = color;
-    }
-
-    setBossAbility(ability) {
-        this.bossAbility = ability;
-    }
-
-    setPlayer(playerName) {
-        this.player = playerName;
-    }
-
-    toObj() {
-        return {
-            time: this.time,
-            ability: this.ability.toObj(),
-            player: this.player
-        };
-    }
-}
-
-class Ability {
-    constructor(id, name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    getId() {
-        return this.id;
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    toObj() {
-        return {
-            id: this.id,
-            name: this.name
-        }
-    }
-}
+var steps = new StepCollection();
 
 $(document).ready(function() {
     loadAbilities();
 
-    $('.ability-cd').on('click', function() {
-        var cooldown_shard = loadShard(COOLDOWN_SHARD);
-
-        var id = $(this).data('ability-id');
-        var name = $(this).data('ability-name');
-
-        var ability = new Ability(id, name);
-        var cooldown = new Cooldown('00:00', ability, "");
-        cooldowns.push(cooldown);
-
-        updateErtNote();
-
-        $('#cooldown-table > tbody').append(Mustache.render(cooldown_shard, { id: cooldowns.length, cooldown: cooldown.toObj() }));
-
-        $('#' + cooldowns.length + '_time').on('keyup', function() {
-            var cooldownId = $(this).data('step') - 1;
-            cooldowns[cooldownId].setTime($(this).val());
-            updateErtNote();
-        });
-
-        $('#' + cooldowns.length + '_boss_ability').on('keyup', function() {
-            var cooldownId = $(this).data('step') - 1;
-            cooldowns[cooldownId].setBossAbility(new Ability(null, $(this).val()));
-            updateErtNote();
-        });
-
-        $('#' + cooldowns.length + '_player').on('keyup', function() {
-            var cooldownId = $(this).data('step') - 1;
-            cooldowns[cooldownId].setPlayer($(this).val());
-            updateErtNote();
-        });
-
-        $('#' + cooldowns.length + '_color').on('change', function() {
-            var cooldownId = $(this).data('step') - 1;
-            cooldowns[cooldownId].setColor($(this).val());
-            updateErtNote();
-        });
-
-        $('#' + cooldowns.length + '_remove').on('click', function() {
-            updateErtNote();
-        });
-    });
+    $('#add-phase').click(addPhase);
+    $('#add-cooldown').click(addCooldown);
 });
+
+function addPhase() {
+    var phaseNo = steps.where({ type: 'phase' }).length + 1;
+    var step = new Step({
+        type: TYPE_PHASE,
+        description: 'Phase ' + phaseNo
+    });
+    steps.push(step);
+    drawPhase(step)
+}
+
+function addCooldown() {
+    var id = steps.length + 1;
+    var step = new Step({
+        id: id,
+        type: TYPE_COOLDOWN,
+        bossAbilityId: '',
+        bossAbilityName: '',
+        description: '',
+        abilityId: '',
+        abilityName: ''
+    });
+    steps.push(step);
+    drawCooldown(step);
+}
+
+function drawPhase(step) {
+    var phase_shard = loadShard(PHASE_SHARD);
+    drawStep(phase_shard, step);
+}
+
+function drawCooldown(step) {
+    var ability_shard = loadShard(ABILITY_SHARD);
+    var cooldown_shard = loadShard(COOLDOWN_SHARD);
+    var ability_cooldown_shard = loadShard(ABILITY_COOLDOWN_SHARD);
+    var index = drawStep(cooldown_shard, step);
+
+    $('tr[data-step="' + index + '"] > td.droppable-ability').droppable({
+        accept: ".draggable-ability",
+        drop: function(event, ui) {
+            // ui.draggable.clone().appendTo($(this));
+            var id = ui.draggable.data('ability-id');
+            var name = ui.draggable.data('ability-name');
+
+            step.set('abilityId', id);
+            step.set('abilityName', name);
+
+            $(this).append(Mustache.render(ability_cooldown_shard, { id: id, name: name }));
+
+            $(this).find('input').on('change', function() {
+                step.set('description', $(this).val());
+            });
+        }
+    });
+
+    $('tr[data-step="' + index + '"] > td.boss-cooldown > input').on('change', function() {
+        var step = steps.findWhere({ id: index });
+
+        var ability = {
+            id: $(this).val(),
+            name: 'Boss Ability'
+        };
+
+        // update the step with the info we need
+        step.bossAbilityId = $(this).val();
+
+        $('tr[data-step="' + index + '"] > td.boss-cooldown > .boss-cooldown-spell-link').html('');
+        $('tr[data-step="' + index + '"] > td.boss-cooldown > .boss-cooldown-spell-link')
+            .append(Mustache.render(ability_shard, ability));
+
+        $WowheadPower.refreshLinks();
+    });
+}
+
+function drawStep(shard, step) {
+    var json = step.toJSON();
+    json.index = steps.length;
+    $('#cooldown-table tbody').append(Mustache.render(shard, json));
+    return json.index;
+}
 
 function loadShard(shard, dataType = 'html') {
     if (shards[shard] == undefined) {
         $.ajax({
-            url: shard + ".html",
+            url: "views/shards/" + shard + ".html",
             dataType: dataType,
             async: false
         }).done(function(data) {
@@ -146,18 +129,17 @@ function loadAbilities() {
         var cell = wowClass.cell;
 
         wowClass.abilities.forEach(function(ability) {
-            $('.' + cell + '-abilities').append(Mustache.render(ability_shard, ability ));
+            $('.' + cell + '-abilities').append(Mustache.render(ability_shard, ability));
         });
     }
+
+    $('div.draggable-ability').draggable({
+        helper: 'clone'
+    });
 }
 
 function updateErtNote() {
     $('#ert_string').html('');
-
-    for (var cooldown in cooldowns) {
-        var html = $('#ert_string').html();
-        $('#ert_string').html(html + formatCooldown(cooldowns[cooldown]) + "\n");
-    }
 }
 
 function formatCooldown(cooldown) {

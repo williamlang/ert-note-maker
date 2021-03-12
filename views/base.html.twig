@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ERT Note and Reloe Sender Generator</title>
+        <script>const whTooltips = {colorLinks: true, iconizeLinks: true, renameLinks: true};</script>
+        <script src="https://wow.zamimg.com/widgets/power.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+        <link href="/css/ertnm.css" rel="stylesheet" />
+        <meta charset="UTF-8">
+    </head>
+    <body class="d-flex flex-column h-100">
+        {% include 'header.html.twig' %}
+
+        <!-- Begin page content -->
+        <main>
+            <div class="container">
+                {% include 'partial/flash.html.twig' with {'flashes': flashes } %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        {# <ol>
+            {% for key, value in _context  %}
+            <li>{{ key }} {{ dump(value) }}</li>
+            {% endfor %}
+        </ol> #}
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/store-js@2.0.4/dist/store.legacy.min.js" integrity="sha256-F+Hc9G+5QpvLeQP5KQeUfWw7I+Vgg+CEtEzWEI9/ONc=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/underscore@1.12.0/underscore.js" integrity="sha256-mWRBKCSrD/5TDoAZzzMOKqLD6s6kif44f5CeEsDw1DM=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/backbone@1.4.0/backbone-min.js" integrity="sha256-OO+KD/bMG3Dr57LO27ZhYL2zYhLP1CJIkCXUUDnFNuc=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mustache@4.1.0/mustache.min.js" integrity="sha256-mh7gV/es1uh2rW94a1OI1CO/jBNd9O7s70tkiJ69rOQ=" crossorigin="anonymous"></script>
+        <script src="/js/abilities.js"></script>
+        <script src="/js/ertnm.js"></script>
+    </body>
+</html>

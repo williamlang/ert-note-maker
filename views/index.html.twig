@@ -1,82 +1,50 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>ERT Note Maker</title>
-        <script>const whTooltips = {colorLinks: true, iconizeLinks: true, renameLinks: true};</script>
-        <script src="https://wow.zamimg.com/widgets/power.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-        <link href="css/ertnm.css" rel="stylesheet" />
-        <meta charset="UTF-8">
-    </head>
-    <body class="d-flex flex-column h-100">
-        {% include 'header.html.twig' %}
+{% extends 'base.html.twig' %}
 
-        <!-- Begin page content -->
-        <main>
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8">
-                        <form class="form-inline">
-                            <h2>Encounter</h2>
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <form class="form-inline">
+            <h2>Encounter</h2>
 
-                            <input type="text" class="mb-2" name="boss" placeholder="Boss" />
+            <select class="form-control" name="encounter_id">
+                {% set lastRaid = null %}
+                {% for encounter in encounters %}
+                    {% if lastRaid != encounter.raid.id %}
+                        {% if lastRaid != null %}
+                        </optgroup>
+                        {% endif %}
+                        <optgroup label="{{ encounter.raid.name }}">
+                        {% set lastRaid = encounter.raid.id %}
+                    {% endif %}
+                        <option>{{ encounter.name }}</option>
+                {% endfor %}
+            </select>
 
-                            <table width="100%" id="cooldown-table">
-                                <thead>
-                                    <tr>
-                                        <th>Time</th>
-                                        <th>Ability</th>
-                                        <th>Cooldowns</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </form>
+            <table width="100%" id="cooldown-table" class="table mt-3">
+                <thead>
+                    <tr>
+                        <th style="width:50px;">Step</th>
+                        <th>Name</th>
+                        <th style="min-width:50%;">Cooldowns</th>
+                        <th style="width:50px;"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">
+                            <button id="add-phase" class="btn btn-success" type="button">Add Phase</button>
+                            <button id="add-cooldown" class="btn btn-success" type="button">Add Cooldown</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
 
-                        <textarea id="ert_string" class="mt-2" style="width:100%; height: 350px;"></textarea>
-                    </div>
-                    <div class="col-md-4">
-                        <h2>Abilities</h2>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h3 class="raid">Raid</h3>
-                                <div class="raid-abilities"></div>
-                                <h3 class="death-knight">Death Knight</h3>
-                                <div class="death-knight-abilities"></div>
-                                <h3 class="demon-hunter">Demon Hunter</h3>
-                                <div class="demon-hunter-abilities"></div>
-                                <h3 class="druid">Druid</h3>
-                                <div class="druid-abilities"></div>
-                                <h3 class="hunter">Hunter</h3>
-                                <div class="hunter-abilities"></div>
-                                <h3 class="mage">Mage</h3>
-                                <div class="mage-abilities"></div>
-                                <h3 class="monk">Monk</h3>
-                                <div class="monk-abilities"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <h3 class="paladin">Paladin</h3>
-                                <div class="paladin-abilities"></div>
-                                <h3 class="priest">Priest</h3>
-                                <div class="priest-abilities"></div>
-                                <h3 class="shaman">Shaman</h3>
-                                <div class="shaman-abilities"></div>
-                                <h3 class="warlock">Warlock</h3>
-                                <div class="warlock-abilities"></div>
-                                <h3 class="warrior">Warrior</h3>
-                                <div class="warrior-abilities"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/store-js@2.0.4/dist/store.legacy.min.js" integrity="sha256-F+Hc9G+5QpvLeQP5KQeUfWw7I+Vgg+CEtEzWEI9/ONc=" crossorigin="anonymous"></script>
-        <script src="js/mustache.js"></script>
-        <script src="js/abilities.js"></script>
-        <script src="js/ertnm.js"></script>
-    </body>
-</html>
+        <textarea id="ert_string" class="mt-3" style="width:100%; height: 350px;"></textarea>
+    </div>
+    <div class="col-md-4">
+        {% include 'abilities.html.twig' %}
+    </div>
+</div>
+{% endblock %}

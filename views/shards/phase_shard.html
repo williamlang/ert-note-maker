@@ -1,0 +1,30 @@
+<tr class="phase">
+    <td>{{ index }}</td>
+    <td>
+        <div style="width:100%;">
+            <input class="form-control" type="text" name="description" value="{{ description }}" />
+        </div>
+    </td>
+    <td>
+        <div class="col">
+            <p>Triggered By</p>
+            <select class="form-control form-inline" name="triggered_by">
+                <option value="boss_ability">Ability</option>
+                <option value="boss_health">Health %</option>
+            </select>
+        </div>
+        <div class="col">
+            <p>Spell ID or Percent</p>
+            <input class="form-control form-inline" type="text" name="triggered_by_value" placeholder="#" />
+        </div>
+
+        <p>Triggered Count</p>
+        <div class="col">
+            <input class="form-control form-inline" type="text" name="triggered_by_count" placeholder="#" />
+            <small>If boss applies a debuff to <em>n</em> players, enter that here.</small>
+        </div>
+    </td>
+    <td>
+        <button class="btn btn-danger" style="display:inline-block;" type="button">X</button>
+    </td>
+</tr>

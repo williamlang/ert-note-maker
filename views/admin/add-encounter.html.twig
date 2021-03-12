@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <h2>Add Encounter</h2>
+    <form method="post" class="form-inline" action="/admin/add-encounter">
+        <div class="mb-3">
+            <label for="raid_id" class="form-label">Raid</label>
+            <select name="raid_id" class="form-control" id="raid_id">
+        {% for raid in raids %}
+                <option value="{{ raid.id }}">{{ raid.name }}</option>
+        {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="The Council of Blood" />
+        </div>
+        <div class="mb-3">
+            <label for="encounter_id" class="form-label">Encounter ID</label>
+            <input type="text" class="form-control" id="encounter_id" name="encounter_id" placeholder="2412" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+<div class="row">
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Raid</th>
+                <th>Encounter</th>
+                <th width="10%">Encounter ID</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for raid in raids %}
+        {% for encounter in raid.encounters %}
+            <tr>
+                <td>{{ raid.name }}</td>
+                <td>{{ encounter.name }}</td>
+                <td>{{ encounter.encounterId }}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

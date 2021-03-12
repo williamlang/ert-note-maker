@@ -50,3 +50,17 @@ main > .container {
 .warrior {
     color: #C69B6D;
 }
+
+#cooldown-table tbody td div {
+    width: 43%;
+    min-height: 20px;
+    display: inline-block;
+}
+
+#cooldown-table tbody tr.phase {
+    background-color: #CFCFCF;
+}
+
+td.ui-droppable-hover {
+    background-color: #00FF98;
+}

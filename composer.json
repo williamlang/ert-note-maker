@@ -1,6 +1,6 @@
 {
     "name": "lang/ert-note-maker",
-    "description": "App to create ERT notes",
+    "description": "App to create ERT notes and Reloe Senders",
     "type": "project",
     "authors": [
         {
@@ -10,6 +10,22 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "twig/twig": "^3.3"
+        "twig/twig": "^3.3",
+        "slim/slim": "^4.7",
+        "slim/psr7": "^1.3",
+        "doctrine/orm": "^2.8",
+        "symfony/yaml": "^5.2",
+        "monolog/monolog": "^2.2",
+        "nesbot/carbon": "^2.45",
+        "symfony/http-foundation": "^5.2",
+        "ramsey/uuid": "^4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "ERTNoteMaker\\": "lib/ERTNoteMaker/"
+        },
+        "files": [
+            "config/bootstrap.php"
+        ]
     }
 }
