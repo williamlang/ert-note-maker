@@ -1,1 +1,1 @@
-|cff{{ color }}{{ bossAbility.name }}|r - {{=<% %>=}}{time:<% time %>} <%={{ }}=%> {{ player }} {spell:{{ ability.id }}}
+|cff{{ color }}{{ bossAbility.name }}|r - {{=<% %>=}}{time:<% time %>} <%={{ }}=%> {% for cooldown in cooldowns %} {{ cooldown.description }} {spell:{{ cooldown.abilityId }}} {% endfor %}

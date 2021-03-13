@@ -20,6 +20,27 @@ var CooldownCollection = Backbone.Collection.extend({
 
 var steps = new StepCollection();
 
+steps.on("add", function(step) {
+    if (step.get('type') == TYPE_PHASE) {
+        drawPhase(step);
+    } else if (step.get('type') == TYPE_COOLDOWN) {
+        drawCooldown(step);
+    }
+
+    updateErtNote();
+    updateIndexes();
+});
+
+steps.on("remove", function(step) {
+    updateErtNote();
+    updateIndexes();
+});
+
+steps.on("change", function() {
+    updateErtNote();
+    updateIndexes();
+});
+
 $(document).ready(function() {
     loadAbilities();
 
@@ -30,26 +51,22 @@ $(document).ready(function() {
 function addPhase() {
     var phaseNo = steps.where({ type: 'phase' }).length + 1;
     var step = new Step({
+        id: uuidv4(),
         type: TYPE_PHASE,
         description: 'Phase ' + phaseNo
     });
     steps.push(step);
-    drawPhase(step)
 }
 
 function addCooldown() {
-    var id = steps.length + 1;
     var step = new Step({
-        id: id,
+        id: uuidv4(),
         type: TYPE_COOLDOWN,
         bossAbilityId: '',
         bossAbilityName: '',
-        description: '',
-        abilityId: '',
-        abilityName: ''
+        cooldowns: new CooldownCollection()
     });
     steps.push(step);
-    drawCooldown(step);
 }
 
 function drawPhase(step) {
@@ -57,32 +74,44 @@ function drawPhase(step) {
     drawStep(phase_shard, step);
 }
 
+/**
+ * Draw the Step of TYPE_COOLDOWN
+ * @param {Step} step
+ */
 function drawCooldown(step) {
     var ability_shard = loadShard(ABILITY_SHARD);
     var cooldown_shard = loadShard(COOLDOWN_SHARD);
     var ability_cooldown_shard = loadShard(ABILITY_COOLDOWN_SHARD);
-    var index = drawStep(cooldown_shard, step);
+    drawStep(cooldown_shard, step);
 
-    $('tr[data-step="' + index + '"] > td.droppable-ability').droppable({
+    $('tr[data-step="' + step.id + '"] > td.droppable-ability').droppable({
         accept: ".draggable-ability",
         drop: function(event, ui) {
-            // ui.draggable.clone().appendTo($(this));
             var id = ui.draggable.data('ability-id');
             var name = ui.draggable.data('ability-name');
 
-            step.set('abilityId', id);
-            step.set('abilityName', name);
+            var cooldown = new Cooldown({
+                id: uuidv4(),
+                abilityId: id,
+                abilityName: name,
+                description: ''
+            });
 
-            $(this).append(Mustache.render(ability_cooldown_shard, { id: id, name: name }));
+            step.get('cooldowns').push(cooldown);
 
+            $(this).append(Mustache.render(ability_cooldown_shard, { cooldown: cooldown.toJSON() }));
             $(this).find('input').on('change', function() {
-                step.set('description', $(this).val());
+                step.get('cooldowns').findWhere({ id: cooldown.get('id') }).set('description', $(this).val());
+            });
+            $('div[data-id="'+ cooldown.get('id') +'"] i.remove-cooldown').click(function() {
+                $('div[data-id="'+ cooldown.get('id') +'"]').remove();
+                step.get('cooldowns').remove(cooldown);
             });
         }
     });
 
-    $('tr[data-step="' + index + '"] > td.boss-cooldown > input').on('change', function() {
-        var step = steps.findWhere({ id: index });
+    $('tr[data-step="' + step.id + '"] > td.boss-cooldown > input').on('change', function() {
+        var step = steps.findWhere({ id: step.id });
 
         var ability = {
             id: $(this).val(),
@@ -92,21 +121,40 @@ function drawCooldown(step) {
         // update the step with the info we need
         step.bossAbilityId = $(this).val();
 
-        $('tr[data-step="' + index + '"] > td.boss-cooldown > .boss-cooldown-spell-link').html('');
-        $('tr[data-step="' + index + '"] > td.boss-cooldown > .boss-cooldown-spell-link')
+        $('tr[data-step="' + step.id + '"] > td.boss-cooldown > .boss-cooldown-spell-link').html('');
+        $('tr[data-step="' + step.id + '"] > td.boss-cooldown > .boss-cooldown-spell-link')
             .append(Mustache.render(ability_shard, ability));
 
         $WowheadPower.refreshLinks();
     });
 }
 
+/**
+ * Draw a Step in the table
+ * @param string shard
+ * @param {Step} step
+ */
 function drawStep(shard, step) {
     var json = step.toJSON();
-    json.index = steps.length;
     $('#cooldown-table tbody').append(Mustache.render(shard, json));
-    return json.index;
+    $('#cooldown-table tbody tr[data-step="' + step.id + '"] td i.close-button').click(function() {
+        $('tr[data-step="' + step.id + '"]').remove();
+        steps.remove(step);
+    });
 }
 
+function updateIndexes() {
+    var tds = $('td.step-index');
+    for (var td in tds) {
+        $('td.step-index').eq(td).html((parseFloat(td) + 1).toString());
+    }
+}
+
+/**
+ * Grab the HTML shard
+ * @param string shard
+ * @param string dataType
+ */
 function loadShard(shard, dataType = 'html') {
     if (shards[shard] == undefined) {
         $.ajax({
@@ -121,6 +169,9 @@ function loadShard(shard, dataType = 'html') {
     return shards[shard];
 }
 
+/**
+ * Load all configured cooldowns
+ */
 function loadAbilities() {
     var ability_shard = loadShard(ABILITY_SHARD);
 
@@ -146,3 +197,14 @@ function formatCooldown(cooldown) {
     var ert_cooldown_shard = loadShard(ERT_COOLDOWN_SHARD, 'text');
     return Mustache.render(ert_cooldown_shard, cooldown);
 }
+
+/**
+ * Generate a UUIDv4 UUID
+ * https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+ */
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }

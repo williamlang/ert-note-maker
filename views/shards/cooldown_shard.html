@@ -1,5 +1,5 @@
-<tr class="cooldown" data-step="{{ index }}">
-    <td>{{ index }}</td>
+<tr class="cooldown" data-step="{{ id }}">
+    <td class="step-index"></td>
     <td class="boss-cooldown">
         <p>SpellID</p>
         <input class="form-control" style="width:50%;" type="text" name="bossAbilityId" value="{{ bossAbilityId }}" />
@@ -9,6 +9,6 @@
 
     </td>
     <td>
-        <button class="btn btn-danger" style="display:inline-block;" type="button">X</button>
+        <i class="bi-x-circle-fill close-button"></i>
     </td>
 </tr>

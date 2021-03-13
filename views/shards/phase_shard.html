@@ -1,5 +1,5 @@
-<tr class="phase">
-    <td>{{ index }}</td>
+<tr class="phase" data-step="{{ id }}">
+    <td class="step-index"></td>
     <td>
         <div style="width:100%;">
             <input class="form-control" type="text" name="description" value="{{ description }}" />
@@ -25,6 +25,6 @@
         </div>
     </td>
     <td>
-        <button class="btn btn-danger" style="display:inline-block;" type="button">X</button>
+        <i class="bi-x-circle-fill close-button"></i>
     </td>
 </tr>
