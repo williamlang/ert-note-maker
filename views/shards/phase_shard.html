@@ -1,6 +1,21 @@
 <tr class="phase" data-step="{{ id }}">
     <td class="step-index"></td>
     <td>
+        <select class="form-contol" name="color">
+            <option value="F60000">Red</option>
+            <option value="FFA500">Orange</option>
+            <option value="FFFF00">Yellow</option>
+            <option value="008000">Green</option>
+            <option value="0000FF">Blue</option>
+            <option value="4B0082">Indigo</option>
+            <option value="EE82EE">Violet</option>
+            <option value="C0C0C0">Grey</option>
+        </select>
+    </td>
+    <td>
+        <input type="text" name="time" class="form-control" value="00:00" />
+    </td>
+    <td>
         <div style="width:100%;">
             <input class="form-control" type="text" name="description" value="{{ description }}" />
         </div>

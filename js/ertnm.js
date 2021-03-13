@@ -2,6 +2,8 @@ var ABILITY_SHARD = "ability_shard";
 var COOLDOWN_SHARD = "cooldown_shard";
 var PHASE_SHARD = "phase_shard";
 var ERT_COOLDOWN_SHARD = "ert_cooldown_shard";
+var ERT_PHASE_SHARD = "ert_phase_shard";
+var ERT_COOLDOWN_LIST_SHARD = "ert_cooldown_list_shard";
 var ABILITY_COOLDOWN_SHARD = "ability_cooldown_shard"
 var TYPE_COOLDOWN = 'cooldown';
 var TYPE_PHASE = 'phase';
@@ -41,6 +43,11 @@ steps.on("change", function() {
     updateIndexes();
 });
 
+steps.on("cooldownChange", function() {
+    updateErtNote();
+    updateIndexes();
+});
+
 $(document).ready(function() {
     loadAbilities();
 
@@ -52,8 +59,10 @@ function addPhase() {
     var phaseNo = steps.where({ type: 'phase' }).length + 1;
     var step = new Step({
         id: uuidv4(),
+        color: 'F60000',
         type: TYPE_PHASE,
-        description: 'Phase ' + phaseNo
+        description: 'Phase ' + phaseNo,
+        time: '00:00'
     });
     steps.push(step);
 }
@@ -61,12 +70,14 @@ function addPhase() {
 function addCooldown() {
     var step = new Step({
         id: uuidv4(),
+        color: 'F60000',
         type: TYPE_COOLDOWN,
-        bossAbilityId: '',
-        bossAbilityName: '',
-        cooldowns: new CooldownCollection()
+        description: '',
+        cooldowns: new CooldownCollection(),
+        time: '00:00'
     });
     steps.push(step);
+    $WowheadPower.refreshLinks();
 }
 
 function drawPhase(step) {
@@ -98,34 +109,23 @@ function drawCooldown(step) {
             });
 
             step.get('cooldowns').push(cooldown);
+            step.trigger("cooldownChange");
 
             $(this).append(Mustache.render(ability_cooldown_shard, { cooldown: cooldown.toJSON() }));
-            $(this).find('input').on('change', function() {
+            $(this).find('input[data-id="' + cooldown.get('id') + '"]').on('change', function() {
                 step.get('cooldowns').findWhere({ id: cooldown.get('id') }).set('description', $(this).val());
+                steps.trigger("cooldownChange");
             });
             $('div[data-id="'+ cooldown.get('id') +'"] i.remove-cooldown').click(function() {
                 $('div[data-id="'+ cooldown.get('id') +'"]').remove();
                 step.get('cooldowns').remove(cooldown);
+                steps.trigger("cooldownChange");
             });
         }
     });
 
     $('tr[data-step="' + step.id + '"] > td.boss-cooldown > input').on('change', function() {
-        var step = steps.findWhere({ id: step.id });
-
-        var ability = {
-            id: $(this).val(),
-            name: 'Boss Ability'
-        };
-
-        // update the step with the info we need
-        step.bossAbilityId = $(this).val();
-
-        $('tr[data-step="' + step.id + '"] > td.boss-cooldown > .boss-cooldown-spell-link').html('');
-        $('tr[data-step="' + step.id + '"] > td.boss-cooldown > .boss-cooldown-spell-link')
-            .append(Mustache.render(ability_shard, ability));
-
-        $WowheadPower.refreshLinks();
+        step.set('description', $(this).val());
     });
 }
 
@@ -137,6 +137,12 @@ function drawCooldown(step) {
 function drawStep(shard, step) {
     var json = step.toJSON();
     $('#cooldown-table tbody').append(Mustache.render(shard, json));
+    $('#cooldown-table tbody tr[data-step="' + step.id + '"] td input[name=time]').change(function() {
+        step.set('time', $(this).val());
+    });
+    $('#cooldown-table tbody tr[data-step="' + step.id + '"] td select').change(function() {
+        step.set('color', $(this).val().toLowerCase());
+    });
     $('#cooldown-table tbody tr[data-step="' + step.id + '"] td i.close-button').click(function() {
         $('tr[data-step="' + step.id + '"]').remove();
         steps.remove(step);
@@ -191,11 +197,28 @@ function loadAbilities() {
 
 function updateErtNote() {
     $('#ert_string').html('');
+
+    steps.forEach(function(step) {
+        $('#ert_string').html($('#ert_string').html() + formatStep(step) + "\n");
+    });
 }
 
-function formatCooldown(cooldown) {
-    var ert_cooldown_shard = loadShard(ERT_COOLDOWN_SHARD, 'text');
-    return Mustache.render(ert_cooldown_shard, cooldown);
+function formatStep(step) {
+    var ert_cooldown_shard      = loadShard(ERT_COOLDOWN_SHARD, 'text');
+    var ert_phase_shard         = loadShard(ERT_PHASE_SHARD, 'text');
+    var ert_cooldown_list_shard = loadShard(ERT_COOLDOWN_LIST_SHARD, 'text');
+
+    if (step.get('type') == TYPE_PHASE) {
+        return Mustache.render(ert_phase_shard, step.toJSON())
+    } else if (step.get('type') == TYPE_COOLDOWN) {
+        var text = Mustache.render(ert_cooldown_shard, step.toJSON());
+
+        step.get('cooldowns').forEach(function(cooldown) {
+            text = text + Mustache.render(ert_cooldown_list_shard, cooldown.toJSON());
+        });
+
+        return text;
+    }
 }
 
 /**
